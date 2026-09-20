@@ -39,9 +39,11 @@ Derived from [context.md](./context.md). ดูรายละเอียด im
 
 ## ดีไซน์
 
-- [x] โทนสีอบอุ่นแบบไทย (แดงลาคเกอร์ / ทอง / ครีม) พร้อม light/dark theme
+- [x] Redesign ตาม `.claude/DESIGN.md` (dark-void theme): พื้นดำล้วน #000, accent ม่วง Electric Iris #8052ff (ปุ่มหลัก), amber Saffron Spark #ffb829 (highlight/hover), ไม่มี card/border/shadow — ใช้ whitespace แทน, ปุ่มเป็น pill radius เต็ม (2026-09-20)
 - [x] responsive ที่ความกว้างมือถือ (~400px)
-- [ ] เช็คความคมชัดของสี (contrast) ในโหมด dark theme อีกครั้งบนอุปกรณ์จริง
+- [ ] เช็คความคมชัดของสี (contrast) ของธีมใหม่อีกครั้งบนอุปกรณ์จริง
+
+> **หมายเหตุมติเก่า:** เดิมใช้โทนสีอบอุ่นแบบไทย (แดงลาคเกอร์ / ทอง / ครีม) พร้อม light/dark theme ตาม system preference — ถูกแทนที่ด้วย dark-void theme เดียว (ไม่มี light mode) ตามคำขอ redesign อ้างอิง `.claude/DESIGN.md` เมื่อ 2026-09-20
 
 ## งานที่ยังไม่ได้ทำ (นอกขอบเขตเดิม แต่อาจพิจารณาภายหลัง)
 
