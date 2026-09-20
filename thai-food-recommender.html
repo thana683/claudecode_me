@@ -1,0 +1,631 @@
+<title>วันนี้กินไร</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Trirong:wght@500;700&family=Sarabun:wght@400;500;600;700&display=swap');
+
+  :root {
+    --paper: #f2e8d5;
+    --surface: #fbf4e4;
+    --ink: #2b1b14;
+    --ink-soft: #6b5540;
+    --gold: #b9822a;
+    --gold-strong: #8f611c;
+    --red: #a32a29;
+    --ember: #d94f2b;
+    --leaf: #3f5c3a;
+    --border: rgba(43, 27, 20, 0.22);
+    --shadow: rgba(43, 27, 20, 0.16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #241512;
+      --surface: #341f19;
+      --ink: #f2e8d5;
+      --ink-soft: #cbb59a;
+      --gold: #e3b658;
+      --gold-strong: #f0c877;
+      --red: #e07364;
+      --ember: #ff7a4d;
+      --leaf: #8ec27c;
+      --border: rgba(242, 232, 213, 0.2);
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #241512;
+    --surface: #341f19;
+    --ink: #f2e8d5;
+    --ink-soft: #cbb59a;
+    --gold: #e3b658;
+    --gold-strong: #f0c877;
+    --red: #e07364;
+    --ember: #ff7a4d;
+    --leaf: #8ec27c;
+    --border: rgba(242, 232, 213, 0.2);
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Sarabun', sans-serif;
+    padding-inline: 20px;
+    padding-block: 32px 48px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* ---- brand header ---- */
+  .brand {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .brand h1 {
+    font-family: 'Trirong', serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 8vw, 2.6rem);
+    margin: 0;
+    color: var(--red);
+    letter-spacing: 0.01em;
+  }
+
+  .brand p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+
+  /* ---- stage / dish reveal ---- */
+  .stage {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 36px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 18px 40px -24px var(--shadow);
+  }
+
+  .medallion {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.2rem;
+    background:
+      radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--gold) 35%, transparent), transparent 60%),
+      var(--paper);
+    border: 2px dashed var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .medallion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .dish-copy {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 34ch;
+  }
+
+  .dish-copy h2 {
+    font-family: 'Trirong', serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .dish-copy p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(6px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .dish-copy.revealing, .medallion.revealing {
+    animation: reveal 0.4s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dish-copy.revealing, .medallion.revealing { animation: none; }
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  button {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .roll-btn {
+    flex: 1;
+    background: var(--red);
+    color: var(--paper);
+    border-radius: 999px;
+    padding: 14px 20px;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .roll-btn:hover { background: var(--ember); }
+  .roll-btn:active { transform: scale(0.98); }
+  .roll-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .heart-btn {
+    width: 52px;
+    height: 52px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--red);
+    transition: transform 0.12s ease, background 0.15s ease;
+  }
+
+  .heart-btn[aria-pressed="true"] {
+    background: color-mix(in srgb, var(--red) 14%, var(--paper));
+    border-color: var(--red);
+  }
+
+  .heart-btn:active { transform: scale(0.92); }
+  .heart-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* ---- favorites ---- */
+  .favorites h3 {
+    font-family: 'Trirong', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .favorites h3 .count {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  .fav-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px dashed var(--border);
+  }
+
+  .fav-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-block: 12px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .fav-emoji {
+    font-size: 1.4rem;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .fav-emoji img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .fav-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fav-text .name {
+    font-weight: 600;
+    font-size: 0.98rem;
+  }
+
+  .fav-text .desc {
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .remove-btn {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .remove-btn:hover { background: color-mix(in srgb, var(--red) 12%, transparent); color: var(--red); }
+  .remove-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .empty-favorites, .no-results {
+    padding-block: 18px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    text-align: center;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  /* ---- favorites search & filter ---- */
+  .fav-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+
+  .fav-search {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.92rem;
+  }
+
+  .fav-search::placeholder { color: var(--ink-soft); }
+  .fav-search:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .fav-category {
+    flex: none;
+    max-width: 40%;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .fav-category:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+</style>
+
+<div class="page">
+  <header class="brand">
+    <h1>วันนี้กินไร</h1>
+    <p>สุ่มเมนูอาหารไทยสักจาน แล้วเก็บเมนูที่ถูกใจไว้ตรงนี้</p>
+  </header>
+
+  <section class="stage">
+    <div class="medallion" id="medallion">🍜</div>
+    <div class="dish-copy" id="dishCopy">
+      <h2 id="dishName">กำลังสุ่ม…</h2>
+      <p id="dishDesc"></p>
+    </div>
+    <div class="controls">
+      <button class="roll-btn" id="rollBtn" type="button">สุ่มเมนูใหม่</button>
+      <button class="heart-btn" id="heartBtn" type="button" aria-pressed="false" aria-label="เก็บเป็นเมนูโปรด">♡</button>
+    </div>
+  </section>
+
+  <section class="favorites">
+    <h3>เมนูที่ชอบ <span class="count" id="favCount">(0)</span></h3>
+    <div class="fav-filters" id="favFilters" hidden>
+      <input type="search" class="fav-search" id="favSearch" placeholder="ค้นหาเมนูโปรด…" aria-label="ค้นหาเมนูโปรด">
+      <select class="fav-category" id="favCategory" aria-label="กรองตามหมวดหมู่">
+        <option value="all">ทุกหมวด</option>
+        <option value="คาว">คาว</option>
+        <option value="แกง">แกง</option>
+        <option value="ผัด">ผัด</option>
+        <option value="ยำ">ยำ</option>
+        <option value="ของหวาน">ของหวาน</option>
+      </select>
+    </div>
+    <ul class="fav-list" id="favList"></ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  var dishes = [
+    { name: "ผัดไทย", emoji: "🍤", desc: "เส้นจันท์ผัดเปรี้ยวหวานกับกุ้ง ไข่ และถั่วงอก โรยถั่วลิสงป่น", category: "ผัด", img: "image/pad-thai.png" },
+    { name: "ต้มยำกุ้ง", emoji: "🍲", desc: "ซุปรสเปรี้ยวเผ็ดใส่กุ้ง ตะไคร้ ใบมะกรูด และพริกขี้หนู", category: "แกง", img: "image/tom-yum-goong.png" },
+    { name: "แกงเขียวหวานไก่", emoji: "🍛", desc: "แกงกะทิเผ็ดหอมใบโหระพา ใส่ไก่และมะเขือเปราะ", category: "แกง", img: "image/green-curry-chicken.png" },
+    { name: "ส้มตำ", emoji: "🥗", desc: "ยำมะละกอดิบรสเปรี้ยวเผ็ดเค็มหวาน ตำกับถั่วฝักยาวและมะเขือเทศ", category: "ยำ", img: "image/som-tam.png" },
+    { name: "ข้าวผัดกะเพรา", emoji: "🌶️", desc: "ข้าวผัดใบกะเพราเผ็ดจัด ใส่หมูสับและไข่ดาว", category: "ผัด", img: "image/khao-pad-kaprao.png" },
+    { name: "ข้าวมันไก่", emoji: "🍗", desc: "ข้าวหุงน้ำมันไก่หอมมัน เสิร์ฟพร้อมไก่ต้มและน้ำจิ้มขิง", category: "คาว", img: "image/khao-man-gai.png" },
+    { name: "ผัดซีอิ๊ว", emoji: "🍜", desc: "เส้นใหญ่ผัดซีอิ๊วดำกับคะน้าและไข่ รสเค็มหอมไหม้กระทะ", category: "ผัด", img: "image/pad-see-ew.png" },
+    { name: "แกงมัสมั่นเนื้อ", emoji: "🥘", desc: "แกงกะทิรสเข้มข้นหวานมัน ใส่เนื้อตุ๋นนุ่มและมันฝรั่ง", category: "แกง", img: "image/massaman-beef.png" },
+    { name: "ลาบหมู", emoji: "🌿", desc: "หมูสับคลุกพริกป่นข้าวคั่วและใบสะระแหน่ รสจัดจ้าน", category: "ยำ", img: "image/larb-moo.png" },
+    { name: "ผัดกะเพราหมูกรอบ", emoji: "🥓", desc: "ข้าวผัดกะเพราใส่หมูกรอบเผ็ดร้อน หอมกระเทียม", category: "ผัด", img: "image/kaprao-moo-krob.png" },
+    { name: "แกงส้มผักรวม", emoji: "🍲", desc: "แกงรสเปรี้ยวเผ็ดใส่ผักหลากชนิดและปลา", category: "แกง", img: "image/kaeng-som-vegetable.png" },
+    { name: "หมูปิ้ง", emoji: "🍢", desc: "หมูหมักหวานเค็มปิ้งไฟจนหอม เสิร์ฟคู่ข้าวเหนียว", category: "คาว", img: "image/moo-ping.png" },
+    { name: "ไก่ทอดหาดใหญ่", emoji: "🍗", desc: "ไก่ทอดหมักเครื่องเทศ กรอบนอกนุ่มใน โรยหอมเจียว", category: "คาว", img: "image/kai-tod-hatyai.png" },
+    { name: "ข้าวซอยไก่", emoji: "🍜", desc: "เส้นบะหมี่ในน้ำแกงกะทิเหลืองหอมเครื่องแกง โรยเส้นกรอบ", category: "แกง", img: "image/khao-soi-gai.png" },
+    { name: "ผัดพริกแกงหมู", emoji: "🌶️", desc: "หมูผัดพริกแกงเผ็ดร้อน ใส่ถั่วฝักยาวและใบมะกรูด", category: "ผัด", img: "image/pad-prik-gaeng-moo.png" },
+    { name: "แกงป่าไก่", emoji: "🍲", desc: "แกงรสจัดไม่ใส่กะทิ เผ็ดร้อนหอมสมุนไพร", category: "แกง", img: "image/gaeng-pa-gai.png" },
+    { name: "หอยทอด", emoji: "🦪", desc: "แป้งไข่ทอดกับหอยแมลงภู่สด กรอบนอกนุ่มใน", category: "คาว", img: "image/hoi-tod.png" },
+    { name: "ไข่เจียวหมูสับ", emoji: "🍳", desc: "ไข่เจียวฟูใส่หมูสับ ทานคู่ข้าวสวยร้อนๆ", category: "คาว", img: "image/khai-jiao-moo-sub.png" },
+    { name: "ต้มข่าไก่", emoji: "🍲", desc: "ซุปกะทิรสเปรี้ยวเผ็ดอ่อนๆ หอมข่าและตะไคร้", category: "แกง", img: "image/tom-kha-gai.png" },
+    { name: "ยำวุ้นเส้น", emoji: "🥗", desc: "วุ้นเส้นยำรสเปรี้ยวเผ็ดใส่หมูสับและกุ้ง", category: "ยำ", img: "image/yum-woonsen.png" },
+    { name: "แกงเผ็ดเป็ดย่าง", emoji: "🦆", desc: "แกงกะทิเผ็ดหอมใส่เป็ดย่างและมะเขือพวง", category: "แกง", img: "image/kaeng-ped-yang.png" },
+    { name: "ปลาทอดราดพริก", emoji: "🐟", desc: "ปลาทอดกรอบราดซอสพริกเปรี้ยวหวานเผ็ด", category: "คาว", img: "image/pla-tod-rad-prik.png" },
+    { name: "ข้าวเหนียวมะม่วง", emoji: "🥭", desc: "ข้าวเหนียวมูนหอมกะทิ เสิร์ฟคู่มะม่วงสุก", category: "ของหวาน", img: "image/mango-sticky-rice.png" },
+    { name: "ทับทิมกรอบ", emoji: "🍧", desc: "ขนมหวานเย็นสีแดงกรอบในน้ำกะทิใส่น้ำแข็ง", category: "ของหวาน", img: "image/tub-tim-krob.png" },
+    { name: "ขนมครก", emoji: "🥥", desc: "แป้งกะทิหอมหวานปิ้งในเตาดินจนหน้ากรอบ", category: "ของหวาน", img: "image/khanom-krok.png" },
+    { name: "บัวลอยไข่หวาน", emoji: "🍮", desc: "แป้งปั้นกลมในน้ำกะทิหวาน ใส่ไข่แดง", category: "ของหวาน", img: "image/bua-loy.png" },
+    { name: "ผัดหมี่โคราช", emoji: "🍝", desc: "เส้นหมี่ผัดรสเปรี้ยวหวานแบบโคราช ใส่หมูและถั่วงอก", category: "ผัด", img: "image/pad-mee-korat.png" },
+    { name: "แกงไตปลา", emoji: "🍲", desc: "แกงใต้รสจัดจ้าน ใส่ไตปลาและผักเหนาะ", category: "แกง", img: "image/kaeng-tai-pla.png" },
+    { name: "คั่วกลิ้งหมู", emoji: "🌶️", desc: "หมูสับผัดพริกแกงใต้แห้ง เผ็ดร้อนหอมใบมะกรูด", category: "ผัด", img: "image/khua-kling-moo.png" },
+    { name: "หมูสะเต๊ะ", emoji: "🍢", desc: "หมูหมักเครื่องเทศปิ้งไม้ เสิร์ฟคู่น้ำจิ้มถั่วและอาจาด", category: "คาว", img: "image/moo-satay.png" },
+    { name: "ปอเปี๊ยะทอด", emoji: "🥟", desc: "แป้งห่อไส้ผักและวุ้นเส้นทอดกรอบ", category: "คาว", img: "image/por-pia-tod.png" },
+    { name: "ยำปลาดุกฟู", emoji: "🐟", desc: "ปลาดุกฉีกทอดกรอบยำกับมะม่วงเปรี้ยว", category: "ยำ", img: "image/yum-pla-duk-foo.png" },
+    { name: "ก๋วยเตี๋ยวเรือ", emoji: "🍜", desc: "เส้นก๋วยเตี๋ยวน้ำตกรสจัดกลิ่นเครื่องเทศ", category: "คาว", img: "image/boat-noodles.png" },
+    { name: "แกงคั่วสับปะรด", emoji: "🍍", desc: "แกงกะทิรสเปรี้ยวหวานใส่สับปะรดและกุ้ง", category: "แกง", img: "image/kaeng-kua-sapparot.png" },
+    { name: "ข้าวคลุกกะปิ", emoji: "🍚", desc: "ข้าวคลุกกะปิหอมผัดกับกุ้งแห้งและผักเคียง", category: "คาว", img: "image/khao-kluk-kapi.png" }
+  ];
+
+  var FAV_KEY = "thai-food-favorites-v1";
+  var currentIndex = -1;
+  var favorites = [];
+  var favSearchQuery = "";
+  var favCategoryFilter = "all";
+
+  var medallion = document.getElementById("medallion");
+  var dishCopy = document.getElementById("dishCopy");
+  var dishName = document.getElementById("dishName");
+  var dishDesc = document.getElementById("dishDesc");
+  var rollBtn = document.getElementById("rollBtn");
+  var heartBtn = document.getElementById("heartBtn");
+  var favList = document.getElementById("favList");
+  var favCount = document.getElementById("favCount");
+  var favFilters = document.getElementById("favFilters");
+  var favSearch = document.getElementById("favSearch");
+  var favCategory = document.getElementById("favCategory");
+
+  function loadFavorites() {
+    try {
+      var raw = localStorage.getItem(FAV_KEY);
+      favorites = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(favorites)) favorites = [];
+    } catch (e) {
+      favorites = [];
+    }
+  }
+
+  function saveFavorites() {
+    try {
+      localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
+    } catch (e) {}
+  }
+
+  function isFavorite(name) {
+    return favorites.indexOf(name) !== -1;
+  }
+
+  function renderDishVisual(container, dish) {
+    container.innerHTML = "";
+    var img = document.createElement("img");
+    img.src = dish.img;
+    img.alt = dish.name;
+    img.loading = "lazy";
+    img.addEventListener("error", function () {
+      img.remove();
+      container.textContent = dish.emoji;
+    });
+    container.appendChild(img);
+  }
+
+  function getFilteredFavorites() {
+    var query = favSearchQuery.trim().toLowerCase();
+    return favorites.filter(function (name) {
+      var dish = dishes.find(function (d) { return d.name === name; });
+      if (!dish) return false;
+      if (favCategoryFilter !== "all" && dish.category !== favCategoryFilter) return false;
+      if (query && dish.name.toLowerCase().indexOf(query) === -1) return false;
+      return true;
+    });
+  }
+
+  function renderFavorites() {
+    favCount.textContent = "(" + favorites.length + ")";
+    favList.innerHTML = "";
+
+    if (favorites.length === 0) {
+      favFilters.hidden = true;
+      var empty = document.createElement("li");
+      empty.className = "empty-favorites";
+      empty.textContent = "ยังไม่มีเมนูโปรด กดหัวใจตอนสุ่มเจอเมนูที่ถูกใจ";
+      favList.appendChild(empty);
+      return;
+    }
+
+    favFilters.hidden = false;
+    var visibleNames = getFilteredFavorites();
+
+    if (visibleNames.length === 0) {
+      var noResults = document.createElement("li");
+      noResults.className = "no-results";
+      noResults.textContent = "ไม่พบเมนูโปรดที่ตรงกับการค้นหา/ตัวกรอง";
+      favList.appendChild(noResults);
+      return;
+    }
+
+    visibleNames.forEach(function (name) {
+      var dish = dishes.find(function (d) { return d.name === name; });
+      if (!dish) return;
+
+      var row = document.createElement("li");
+      row.className = "fav-row";
+
+      var emoji = document.createElement("span");
+      emoji.className = "fav-emoji";
+      renderDishVisual(emoji, dish);
+
+      var text = document.createElement("div");
+      text.className = "fav-text";
+      var nameEl = document.createElement("span");
+      nameEl.className = "name";
+      nameEl.textContent = dish.name;
+      var descEl = document.createElement("span");
+      descEl.className = "desc";
+      descEl.textContent = dish.desc;
+      text.appendChild(nameEl);
+      text.appendChild(descEl);
+
+      var removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.type = "button";
+      removeBtn.setAttribute("aria-label", "เอา " + dish.name + " ออกจากรายการโปรด");
+      removeBtn.textContent = "×";
+      removeBtn.addEventListener("click", function () {
+        removeFavorite(dish.name);
+      });
+
+      row.appendChild(emoji);
+      row.appendChild(text);
+      row.appendChild(removeBtn);
+      favList.appendChild(row);
+    });
+  }
+
+  function addFavorite(name) {
+    if (isFavorite(name)) return;
+    favorites.unshift(name);
+    saveFavorites();
+    renderFavorites();
+  }
+
+  function removeFavorite(name) {
+    var idx = favorites.indexOf(name);
+    if (idx === -1) return;
+    favorites.splice(idx, 1);
+    saveFavorites();
+    renderFavorites();
+    updateHeartState();
+  }
+
+  function updateHeartState() {
+    var dish = dishes[currentIndex];
+    var active = dish && isFavorite(dish.name);
+    heartBtn.setAttribute("aria-pressed", active ? "true" : "false");
+    heartBtn.textContent = active ? "♥" : "♡";
+    heartBtn.setAttribute("aria-label", active ? "เอาออกจากเมนูโปรด" : "เก็บเป็นเมนูโปรด");
+  }
+
+  function renderCurrentDish() {
+    var dish = dishes[currentIndex];
+    renderDishVisual(medallion, dish);
+    dishName.textContent = dish.name;
+    dishDesc.textContent = dish.desc;
+    updateHeartState();
+
+    [medallion, dishCopy].forEach(function (el) {
+      el.classList.remove("revealing");
+      void el.offsetWidth;
+      el.classList.add("revealing");
+    });
+  }
+
+  function rollDish() {
+    if (dishes.length === 0) return;
+    var nextIndex = currentIndex;
+    if (dishes.length === 1) {
+      nextIndex = 0;
+    } else {
+      while (nextIndex === currentIndex) {
+        nextIndex = Math.floor(Math.random() * dishes.length);
+      }
+    }
+    currentIndex = nextIndex;
+    renderCurrentDish();
+  }
+
+  rollBtn.addEventListener("click", rollDish);
+  heartBtn.addEventListener("click", function () {
+    var dish = dishes[currentIndex];
+    if (!dish) return;
+    if (isFavorite(dish.name)) {
+      removeFavorite(dish.name);
+    } else {
+      addFavorite(dish.name);
+    }
+    updateHeartState();
+  });
+
+  favSearch.addEventListener("input", function () {
+    favSearchQuery = favSearch.value;
+    renderFavorites();
+  });
+
+  favCategory.addEventListener("change", function () {
+    favCategoryFilter = favCategory.value;
+    renderFavorites();
+  });
+
+  loadFavorites();
+  renderFavorites();
+  rollDish();
+})();
+</script>

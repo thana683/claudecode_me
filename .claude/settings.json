@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "say -v Kanya \"ทำงานเสร็จแล้วค่ะ\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
