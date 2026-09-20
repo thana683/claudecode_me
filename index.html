@@ -358,33 +358,37 @@
 
   .fav-category:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-  /* ---- clickable dish targets ---- */
-  .dish-hit {
-    cursor: pointer;
-    border-radius: 20px;
+  /* ---- dish detail trigger ---- */
+  .medallion {
+    padding: 0;
+    margin: 0;
   }
 
-  .dish-hit:focus-visible {
+  .medallion:focus-visible {
     outline: 2px solid var(--gold);
-    outline-offset: 4px;
+    outline-offset: 3px;
   }
 
-  .dish-hit-stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
+  .dish-copy h2 {
+    cursor: pointer;
   }
 
-  .fav-row.dish-hit {
-    border-radius: 12px;
+  .dish-copy h2:hover { color: var(--red); }
+
+  .fav-row {
+    cursor: pointer;
   }
 
-  /* ---- dish detail modal ---- */
-  .dish-modal-backdrop {
+  .fav-row:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+  }
+
+  /* ---- detail modal ---- */
+  .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(20, 12, 8, 0.55);
+    background: rgba(20, 10, 6, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -392,31 +396,29 @@
     z-index: 50;
   }
 
-  .dish-modal-backdrop[hidden] { display: none; }
-
-  .dish-modal {
-    background: var(--surface);
-    border-radius: 28px;
+  .modal {
+    position: relative;
     width: 100%;
     max-width: 420px;
     max-height: 85vh;
     overflow-y: auto;
-    padding: 32px 28px 28px;
-    position: relative;
-    box-shadow: 0 24px 60px -20px var(--shadow);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 28px 24px 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 14px;
-    text-align: center;
+    box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.45);
   }
 
-  .dish-modal-close {
+  .modal-close {
     position: absolute;
     top: 14px;
     right: 14px;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background: var(--paper);
     border: 1px solid var(--border);
@@ -428,60 +430,79 @@
     justify-content: center;
   }
 
-  .dish-modal-close:hover { background: color-mix(in srgb, var(--red) 12%, var(--paper)); color: var(--red); }
-  .dish-modal-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .modal-close:hover { background: color-mix(in srgb, var(--red) 12%, var(--paper)); color: var(--red); }
+  .modal-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-  .dish-modal-medallion {
-    width: 140px;
-    height: 140px;
+  .modal-media {
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.6rem;
+    font-size: 2.6rem;
     background:
       radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--gold) 35%, transparent), transparent 60%),
       var(--paper);
     border: 2px dashed var(--gold);
-    overflow: hidden;
+    flex: none;
   }
 
-  .dish-modal-medallion img {
+  .modal-media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
   }
 
-  .dish-modal-category {
-    display: inline-block;
-    padding: 4px 14px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--gold) 18%, transparent);
-    color: var(--gold-strong);
-    font-size: 0.82rem;
-    font-weight: 600;
-  }
-
-  .dish-modal h2 {
+  .modal h2 {
     font-family: 'Trirong', serif;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin: 0;
+    text-align: center;
   }
 
-  .dish-modal p {
+  .modal-category {
+    font-size: 0.85rem;
+    color: var(--gold-strong);
+    font-weight: 600;
+    margin: -8px 0 0;
+  }
+
+  .modal-desc {
     margin: 0;
     color: var(--ink-soft);
-    font-size: 0.98rem;
+    font-size: 0.95rem;
     line-height: 1.6;
+    text-align: center;
   }
 
-  .dish-modal-actions {
+  .modal-ingredients-title {
+    align-self: flex-start;
+    font-family: 'Trirong', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 6px 0 0;
+  }
+
+  .modal-ingredients {
+    align-self: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
-    gap: 12px;
-    width: 100%;
-    margin-top: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .modal-ingredients li {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.88rem;
   }
 </style>
 </head>
@@ -494,12 +515,10 @@
   </header>
 
   <section class="stage">
-    <div class="dish-hit dish-hit-stage" id="dishHit" role="button" tabindex="0" aria-label="ดูรายละเอียดเมนูนี้">
-      <div class="medallion" id="medallion">🍜</div>
-      <div class="dish-copy" id="dishCopy">
-        <h2 id="dishName">กำลังสุ่ม…</h2>
-        <p id="dishDesc"></p>
-      </div>
+    <button class="medallion" id="medallion" type="button" aria-label="ดูรายละเอียดเมนูและส่วนประกอบ">🍜</button>
+    <div class="dish-copy" id="dishCopy">
+      <h2 id="dishName">กำลังสุ่ม…</h2>
+      <p id="dishDesc"></p>
     </div>
     <div class="controls">
       <button class="roll-btn" id="rollBtn" type="button">สุ่มเมนูใหม่</button>
@@ -524,57 +543,56 @@
   </section>
 </div>
 
-<div class="dish-modal-backdrop" id="dishModalBackdrop" hidden>
-  <div class="dish-modal" role="dialog" aria-modal="true" aria-labelledby="dishModalName">
-    <button class="dish-modal-close" id="dishModalClose" type="button" aria-label="ปิด">×</button>
-    <div class="dish-modal-medallion" id="dishModalMedallion"></div>
-    <span class="dish-modal-category" id="dishModalCategory"></span>
-    <h2 id="dishModalName"></h2>
-    <p id="dishModalDesc"></p>
-    <div class="dish-modal-actions">
-      <button class="roll-btn" id="dishModalHeartBtn" type="button" aria-pressed="false"></button>
-    </div>
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" type="button" aria-label="ปิดหน้าต่างรายละเอียด">×</button>
+    <div class="modal-media" id="modalMedia"></div>
+    <h2 id="modalTitle"></h2>
+    <p class="modal-category" id="modalCategory"></p>
+    <p class="modal-desc" id="modalDesc"></p>
+    <h3 class="modal-ingredients-title">ส่วนประกอบ</h3>
+    <ul class="modal-ingredients" id="modalIngredients"></ul>
   </div>
 </div>
 
 <script>
 (function () {
   var dishes = [
-    { name: "ผัดไทย", emoji: "🍤", desc: "เส้นจันท์ผัดเปรี้ยวหวานกับกุ้ง ไข่ และถั่วงอก โรยถั่วลิสงป่น", category: "ผัด", img: "image/pad-thai.png" },
-    { name: "ต้มยำกุ้ง", emoji: "🍲", desc: "ซุปรสเปรี้ยวเผ็ดใส่กุ้ง ตะไคร้ ใบมะกรูด และพริกขี้หนู", category: "แกง", img: "image/tom-yum-goong.png" },
-    { name: "แกงเขียวหวานไก่", emoji: "🍛", desc: "แกงกะทิเผ็ดหอมใบโหระพา ใส่ไก่และมะเขือเปราะ", category: "แกง", img: "image/green-curry-chicken.png" },
-    { name: "ส้มตำ", emoji: "🥗", desc: "ยำมะละกอดิบรสเปรี้ยวเผ็ดเค็มหวาน ตำกับถั่วฝักยาวและมะเขือเทศ", category: "ยำ", img: "image/som-tam.png" },
-    { name: "ข้าวผัดกะเพรา", emoji: "🌶️", desc: "ข้าวผัดใบกะเพราเผ็ดจัด ใส่หมูสับและไข่ดาว", category: "ผัด", img: "image/khao-pad-kaprao.png" },
-    { name: "ข้าวมันไก่", emoji: "🍗", desc: "ข้าวหุงน้ำมันไก่หอมมัน เสิร์ฟพร้อมไก่ต้มและน้ำจิ้มขิง", category: "คาว", img: "image/khao-man-gai.png" },
-    { name: "ผัดซีอิ๊ว", emoji: "🍜", desc: "เส้นใหญ่ผัดซีอิ๊วดำกับคะน้าและไข่ รสเค็มหอมไหม้กระทะ", category: "ผัด", img: "image/pad-see-ew.png" },
-    { name: "แกงมัสมั่นเนื้อ", emoji: "🥘", desc: "แกงกะทิรสเข้มข้นหวานมัน ใส่เนื้อตุ๋นนุ่มและมันฝรั่ง", category: "แกง", img: "image/massaman-beef.png" },
-    { name: "ลาบหมู", emoji: "🌿", desc: "หมูสับคลุกพริกป่นข้าวคั่วและใบสะระแหน่ รสจัดจ้าน", category: "ยำ", img: "image/larb-moo.png" },
-    { name: "ผัดกะเพราหมูกรอบ", emoji: "🥓", desc: "ข้าวผัดกะเพราใส่หมูกรอบเผ็ดร้อน หอมกระเทียม", category: "ผัด", img: "image/kaprao-moo-krob.png" },
-    { name: "แกงส้มผักรวม", emoji: "🍲", desc: "แกงรสเปรี้ยวเผ็ดใส่ผักหลากชนิดและปลา", category: "แกง", img: "image/kaeng-som-vegetable.png" },
-    { name: "หมูปิ้ง", emoji: "🍢", desc: "หมูหมักหวานเค็มปิ้งไฟจนหอม เสิร์ฟคู่ข้าวเหนียว", category: "คาว", img: "image/moo-ping.png" },
-    { name: "ไก่ทอดหาดใหญ่", emoji: "🍗", desc: "ไก่ทอดหมักเครื่องเทศ กรอบนอกนุ่มใน โรยหอมเจียว", category: "คาว", img: "image/kai-tod-hatyai.png" },
-    { name: "ข้าวซอยไก่", emoji: "🍜", desc: "เส้นบะหมี่ในน้ำแกงกะทิเหลืองหอมเครื่องแกง โรยเส้นกรอบ", category: "แกง", img: "image/khao-soi-gai.png" },
-    { name: "ผัดพริกแกงหมู", emoji: "🌶️", desc: "หมูผัดพริกแกงเผ็ดร้อน ใส่ถั่วฝักยาวและใบมะกรูด", category: "ผัด", img: "image/pad-prik-gaeng-moo.png" },
-    { name: "แกงป่าไก่", emoji: "🍲", desc: "แกงรสจัดไม่ใส่กะทิ เผ็ดร้อนหอมสมุนไพร", category: "แกง", img: "image/gaeng-pa-gai.png" },
-    { name: "หอยทอด", emoji: "🦪", desc: "แป้งไข่ทอดกับหอยแมลงภู่สด กรอบนอกนุ่มใน", category: "คาว", img: "image/hoi-tod.png" },
-    { name: "ไข่เจียวหมูสับ", emoji: "🍳", desc: "ไข่เจียวฟูใส่หมูสับ ทานคู่ข้าวสวยร้อนๆ", category: "คาว", img: "image/khai-jiao-moo-sub.png" },
-    { name: "ต้มข่าไก่", emoji: "🍲", desc: "ซุปกะทิรสเปรี้ยวเผ็ดอ่อนๆ หอมข่าและตะไคร้", category: "แกง", img: "image/tom-kha-gai.png" },
-    { name: "ยำวุ้นเส้น", emoji: "🥗", desc: "วุ้นเส้นยำรสเปรี้ยวเผ็ดใส่หมูสับและกุ้ง", category: "ยำ", img: "image/yum-woonsen.png" },
-    { name: "แกงเผ็ดเป็ดย่าง", emoji: "🦆", desc: "แกงกะทิเผ็ดหอมใส่เป็ดย่างและมะเขือพวง", category: "แกง", img: "image/kaeng-ped-yang.png" },
-    { name: "ปลาทอดราดพริก", emoji: "🐟", desc: "ปลาทอดกรอบราดซอสพริกเปรี้ยวหวานเผ็ด", category: "คาว", img: "image/pla-tod-rad-prik.png" },
-    { name: "ข้าวเหนียวมะม่วง", emoji: "🥭", desc: "ข้าวเหนียวมูนหอมกะทิ เสิร์ฟคู่มะม่วงสุก", category: "ของหวาน", img: "image/mango-sticky-rice.png" },
-    { name: "ทับทิมกรอบ", emoji: "🍧", desc: "ขนมหวานเย็นสีแดงกรอบในน้ำกะทิใส่น้ำแข็ง", category: "ของหวาน", img: "image/tub-tim-krob.png" },
-    { name: "ขนมครก", emoji: "🥥", desc: "แป้งกะทิหอมหวานปิ้งในเตาดินจนหน้ากรอบ", category: "ของหวาน", img: "image/khanom-krok.png" },
-    { name: "บัวลอยไข่หวาน", emoji: "🍮", desc: "แป้งปั้นกลมในน้ำกะทิหวาน ใส่ไข่แดง", category: "ของหวาน", img: "image/bua-loy.png" },
-    { name: "ผัดหมี่โคราช", emoji: "🍝", desc: "เส้นหมี่ผัดรสเปรี้ยวหวานแบบโคราช ใส่หมูและถั่วงอก", category: "ผัด", img: "image/pad-mee-korat.png" },
-    { name: "แกงไตปลา", emoji: "🍲", desc: "แกงใต้รสจัดจ้าน ใส่ไตปลาและผักเหนาะ", category: "แกง", img: "image/kaeng-tai-pla.png" },
-    { name: "คั่วกลิ้งหมู", emoji: "🌶️", desc: "หมูสับผัดพริกแกงใต้แห้ง เผ็ดร้อนหอมใบมะกรูด", category: "ผัด", img: "image/khua-kling-moo.png" },
-    { name: "หมูสะเต๊ะ", emoji: "🍢", desc: "หมูหมักเครื่องเทศปิ้งไม้ เสิร์ฟคู่น้ำจิ้มถั่วและอาจาด", category: "คาว", img: "image/moo-satay.png" },
-    { name: "ปอเปี๊ยะทอด", emoji: "🥟", desc: "แป้งห่อไส้ผักและวุ้นเส้นทอดกรอบ", category: "คาว", img: "image/por-pia-tod.png" },
-    { name: "ยำปลาดุกฟู", emoji: "🐟", desc: "ปลาดุกฉีกทอดกรอบยำกับมะม่วงเปรี้ยว", category: "ยำ", img: "image/yum-pla-duk-foo.png" },
-    { name: "ก๋วยเตี๋ยวเรือ", emoji: "🍜", desc: "เส้นก๋วยเตี๋ยวน้ำตกรสจัดกลิ่นเครื่องเทศ", category: "คาว", img: "image/boat-noodles.png" },
-    { name: "แกงคั่วสับปะรด", emoji: "🍍", desc: "แกงกะทิรสเปรี้ยวหวานใส่สับปะรดและกุ้ง", category: "แกง", img: "image/kaeng-kua-sapparot.png" },
-    { name: "ข้าวคลุกกะปิ", emoji: "🍚", desc: "ข้าวคลุกกะปิหอมผัดกับกุ้งแห้งและผักเคียง", category: "คาว", img: "image/khao-kluk-kapi.png" }
+    { name: "ผัดไทย", emoji: "🍤", desc: "เส้นจันท์ผัดเปรี้ยวหวานกับกุ้ง ไข่ และถั่วงอก โรยถั่วลิสงป่น", category: "ผัด", img: "image/pad-thai.png", ingredients: ["เส้นจันท์", "กุ้ง", "ไข่", "เต้าหู้แข็ง", "ถั่วงอก", "ใบกุยช่าย", "ถั่วลิสงป่น", "มะนาว"] },
+    { name: "ต้มยำกุ้ง", emoji: "🍲", desc: "ซุปรสเปรี้ยวเผ็ดใส่กุ้ง ตะไคร้ ใบมะกรูด และพริกขี้หนู", category: "แกง", img: "image/tom-yum-goong.png", ingredients: ["กุ้ง", "ตะไคร้", "ใบมะกรูด", "ข่า", "พริกขี้หนู", "มะนาว", "เห็ดฟาง", "น้ำปลา"] },
+    { name: "แกงเขียวหวานไก่", emoji: "🍛", desc: "แกงกะทิเผ็ดหอมใบโหระพา ใส่ไก่และมะเขือเปราะ", category: "แกง", img: "image/green-curry-chicken.png", ingredients: ["เนื้อไก่", "พริกแกงเขียวหวาน", "กะทิ", "ใบโหระพา", "มะเขือเปราะ", "มะเขือพวง", "ใบมะกรูด"] },
+    { name: "ส้มตำ", emoji: "🥗", desc: "ยำมะละกอดิบรสเปรี้ยวเผ็ดเค็มหวาน ตำกับถั่วฝักยาวและมะเขือเทศ", category: "ยำ", img: "image/som-tam.png", ingredients: ["มะละกอดิบ", "มะเขือเทศ", "ถั่วฝักยาว", "พริกขี้หนู", "กระเทียม", "มะนาว", "น้ำปลา", "น้ำตาลปี๊บ", "กุ้งแห้ง", "ถั่วลิสง"] },
+    { name: "ข้าวผัดกะเพรา", emoji: "🌶️", desc: "ข้าวผัดใบกะเพราเผ็ดจัด ใส่หมูสับและไข่ดาว", category: "ผัด", img: "image/khao-pad-kaprao.png", ingredients: ["ข้าวสวย", "หมูสับ", "ใบกะเพรา", "พริกขี้หนู", "กระเทียม", "ไข่ดาว", "ซอสปรุงรส"] },
+    { name: "ข้าวมันไก่", emoji: "🍗", desc: "ข้าวหุงน้ำมันไก่หอมมัน เสิร์ฟพร้อมไก่ต้มและน้ำจิ้มขิง", category: "คาว", img: "image/khao-man-gai.png", ingredients: ["ข้าวหอมมะลิ", "เนื้อไก่", "น้ำมันไก่", "ขิง", "กระเทียม", "ซีอิ๊วดำ", "เต้าเจี้ยว"] },
+    { name: "ผัดซีอิ๊ว", emoji: "🍜", desc: "เส้นใหญ่ผัดซีอิ๊วดำกับคะน้าและไข่ รสเค็มหอมไหม้กระทะ", category: "ผัด", img: "image/pad-see-ew.png", ingredients: ["เส้นใหญ่", "คะน้า", "ไข่", "หมู", "ซีอิ๊วดำ", "กระเทียม"] },
+    { name: "แกงมัสมั่นเนื้อ", emoji: "🥘", desc: "แกงกะทิรสเข้มข้นหวานมัน ใส่เนื้อตุ๋นนุ่มและมันฝรั่ง", category: "แกง", img: "image/massaman-beef.png", ingredients: ["เนื้อวัว", "พริกแกงมัสมั่น", "กะทิ", "มันฝรั่ง", "หอมแดง", "ถั่วลิสง", "ใบกระวาน", "น้ำตาลปี๊บ", "น้ำปลา"] },
+    { name: "ลาบหมู", emoji: "🌿", desc: "หมูสับคลุกพริกป่นข้าวคั่วและใบสะระแหน่ รสจัดจ้าน", category: "ยำ", img: "image/larb-moo.png", ingredients: ["หมูสับ", "ข้าวคั่ว", "พริกป่น", "น้ำปลา", "มะนาว", "ใบสะระแหน่", "หอมแดง", "ต้นหอม"] },
+    { name: "ผัดกะเพราหมูกรอบ", emoji: "🥓", desc: "ข้าวผัดกะเพราใส่หมูกรอบเผ็ดร้อน หอมกระเทียม", category: "ผัด", img: "image/kaprao-moo-krob.png", ingredients: ["หมูกรอบ", "ใบกะเพรา", "พริกขี้หนู", "กระเทียม", "ซอสปรุงรส", "พริกไทย"] },
+    { name: "แกงส้มผักรวม", emoji: "🍲", desc: "แกงรสเปรี้ยวเผ็ดใส่ผักหลากชนิดและปลา", category: "แกง", img: "image/kaeng-som-vegetable.png", ingredients: ["เนื้อปลา", "พริกแกงส้ม", "มะละกอ", "ถั่วฝักยาว", "ดอกแค", "น้ำมะขามเปียก", "น้ำปลา"] },
+    { name: "หมูปิ้ง", emoji: "🍢", desc: "หมูหมักหวานเค็มปิ้งไฟจนหอม เสิร์ฟคู่ข้าวเหนียว", category: "คาว", img: "image/moo-ping.png", ingredients: ["หมูสไลซ์", "กะทิ", "น้ำตาลปี๊บ", "ซีอิ๊วขาว", "รากผักชี", "กระเทียม", "พริกไทย"] },
+    { name: "ไก่ทอดหาดใหญ่", emoji: "🍗", desc: "ไก่ทอดหมักเครื่องเทศ กรอบนอกนุ่มใน โรยหอมเจียว", category: "คาว", img: "image/kai-tod-hatyai.png", ingredients: ["เนื้อไก่", "ขมิ้น", "กระเทียม", "รากผักชี", "พริกไทย", "หอมเจียว"] },
+    { name: "ข้าวซอยไก่", emoji: "🍜", desc: "เส้นบะหมี่ในน้ำแกงกะทิเหลืองหอมเครื่องแกง โรยเส้นกรอบ", category: "แกง", img: "image/khao-soi-gai.png", ingredients: ["เส้นบะหมี่", "เนื้อไก่", "พริกแกงข้าวซอย", "กะทิ", "ผักกาดดอง", "หอมแดง", "มะนาว"] },
+    { name: "ผัดพริกแกงหมู", emoji: "🌶️", desc: "หมูผัดพริกแกงเผ็ดร้อน ใส่ถั่วฝักยาวและใบมะกรูด", category: "ผัด", img: "image/pad-prik-gaeng-moo.png", ingredients: ["หมู", "พริกแกงเผ็ด", "ถั่วฝักยาว", "ใบมะกรูด", "น้ำมันพืช"] },
+    { name: "แกงป่าไก่", emoji: "🍲", desc: "แกงรสจัดไม่ใส่กะทิ เผ็ดร้อนหอมสมุนไพร", category: "แกง", img: "image/gaeng-pa-gai.png", ingredients: ["เนื้อไก่", "พริกแกงป่า", "หน่อไม้", "ใบมะกรูด", "พริกไทยอ่อน", "กระชาย"] },
+    { name: "หอยทอด", emoji: "🦪", desc: "แป้งไข่ทอดกับหอยแมลงภู่สด กรอบนอกนุ่มใน", category: "คาว", img: "image/hoi-tod.png", ingredients: ["หอยแมลงภู่", "แป้งข้าว", "ไข่", "ถั่วงอก", "ต้นหอม"] },
+    { name: "ไข่เจียวหมูสับ", emoji: "🍳", desc: "ไข่เจียวฟูใส่หมูสับ ทานคู่ข้าวสวยร้อนๆ", category: "คาว", img: "image/khai-jiao-moo-sub.png", ingredients: ["ไข่", "หมูสับ", "น้ำปลา", "ต้นหอม"] },
+    { name: "ต้มข่าไก่", emoji: "🍲", desc: "ซุปกะทิรสเปรี้ยวเผ็ดอ่อนๆ หอมข่าและตะไคร้", category: "แกง", img: "image/tom-kha-gai.png", ingredients: ["เนื้อไก่", "ข่า", "ตะไคร้", "ใบมะกรูด", "กะทิ", "เห็ดฟาง", "พริกขี้หนูแดง", "มะนาว"] },
+    { name: "ยำวุ้นเส้น", emoji: "🥗", desc: "วุ้นเส้นยำรสเปรี้ยวเผ็ดใส่หมูสับและกุ้ง", category: "ยำ", img: "image/yum-woonsen.png", ingredients: ["วุ้นเส้น", "หมูสับ", "กุ้ง", "มะเขือเทศ", "ขึ้นฉ่าย", "พริกขี้หนู", "มะนาว", "น้ำปลา"] },
+    { name: "แกงเผ็ดเป็ดย่าง", emoji: "🦆", desc: "แกงกะทิเผ็ดหอมใส่เป็ดย่างและมะเขือพวง", category: "แกง", img: "image/kaeng-ped-yang.png", ingredients: ["เป็ดย่าง", "พริกแกงเผ็ด", "กะทิ", "มะเขือพวง", "สับปะรด", "ใบโหระพา"] },
+    { name: "ปลาทอดราดพริก", emoji: "🐟", desc: "ปลาทอดกรอบราดซอสพริกเปรี้ยวหวานเผ็ด", category: "คาว", img: "image/pla-tod-rad-prik.png", ingredients: ["ปลากะพง", "พริกขี้หนู", "กระเทียม", "น้ำตาลปี๊บ", "น้ำปลา", "มะนาว"] },
+    { name: "ข้าวเหนียวมะม่วง", emoji: "🥭", desc: "ข้าวเหนียวมูนหอมกะทิ เสิร์ฟคู่มะม่วงสุก", category: "ของหวาน", img: "image/mango-sticky-rice.png", ingredients: ["ข้าวเหนียว", "กะทิ", "น้ำตาลทราย", "เกลือ", "มะม่วงสุก"] },
+    { name: "ทับทิมกรอบ", emoji: "🍧", desc: "ขนมหวานเย็นสีแดงกรอบในน้ำกะทิใส่น้ำแข็ง", category: "ของหวาน", img: "image/tub-tim-krob.png", ingredients: ["แห้วสด", "แป้งมัน", "สีผสมอาหารสีแดง", "กะทิ", "น้ำแข็ง", "น้ำตาล"] },
+    { name: "ขนมครก", emoji: "🥥", desc: "แป้งกะทิหอมหวานปิ้งในเตาดินจนหน้ากรอบ", category: "ของหวาน", img: "image/khanom-krok.png", ingredients: ["แป้งข้าวเจ้า", "กะทิ", "น้ำตาลปี๊บ", "ต้นหอม", "ข้าวโพด"] },
+    { name: "บัวลอยไข่หวาน", emoji: "🍮", desc: "แป้งปั้นกลมในน้ำกะทิหวาน ใส่ไข่แดง", category: "ของหวาน", img: "image/bua-loy.png", ingredients: ["แป้งข้าวเหนียว", "ไข่แดง", "กะทิ", "น้ำตาลปี๊บ", "ใบเตย"] },
+    { name: "ผัดหมี่โคราช", emoji: "🍝", desc: "เส้นหมี่ผัดรสเปรี้ยวหวานแบบโคราช ใส่หมูและถั่วงอก", category: "ผัด", img: "image/pad-mee-korat.png", ingredients: ["เส้นหมี่โคราช", "หมู", "ถั่วงอก", "ไข่", "ซอสมะขามเปียก", "กุยช่าย"] },
+    { name: "แกงไตปลา", emoji: "🍲", desc: "แกงใต้รสจัดจ้าน ใส่ไตปลาและผักเหนาะ", category: "แกง", img: "image/kaeng-tai-pla.png", ingredients: ["ไตปลา", "พริกแกงไตปลา", "เนื้อปลา", "ถั่วฝักยาว", "มะเขือเปราะ", "สะตอ"] },
+    { name: "คั่วกลิ้งหมู", emoji: "🌶️", desc: "หมูสับผัดพริกแกงใต้แห้ง เผ็ดร้อนหอมใบมะกรูด", category: "ผัด", img: "image/khua-kling-moo.png", ingredients: ["หมูสับ", "พริกแกงคั่วกลิ้งใต้", "ใบมะกรูด", "ตะไคร้"] },
+    { name: "หมูสะเต๊ะ", emoji: "🍢", desc: "หมูหมักเครื่องเทศปิ้งไม้ เสิร์ฟคู่น้ำจิ้มถั่วและอาจาด", category: "คาว", img: "image/moo-satay.png", ingredients: ["เนื้อหมู", "ผงกะหรี่", "กะทิ", "น้ำจิ้มถั่ว", "อาจาดแตงกวาดอง"] },
+    { name: "ปอเปี๊ยะทอด", emoji: "🥟", desc: "แป้งห่อไส้ผักและวุ้นเส้นทอดกรอบ", category: "คาว", img: "image/por-pia-tod.png", ingredients: ["แป้งปอเปี๊ยะ", "วุ้นเส้น", "หมูสับ", "กะหล่ำปลี", "แครอท", "เห็ดหูหนู"] },
+    { name: "ยำปลาดุกฟู", emoji: "🐟", desc: "ปลาดุกฉีกทอดกรอบยำกับมะม่วงเปรี้ยว", category: "ยำ", img: "image/yum-pla-duk-foo.png", ingredients: ["ปลาดุก", "มะม่วงเปรี้ยว", "พริกขี้หนู", "หอมแดง", "มะนาว", "น้ำปลา"] },
+    { name: "ก๋วยเตี๋ยวเรือ", emoji: "🍜", desc: "เส้นก๋วยเตี๋ยวน้ำตกรสจัดกลิ่นเครื่องเทศ", category: "คาว", img: "image/boat-noodles.png", ingredients: ["เส้นก๋วยเตี๋ยว", "เนื้อวัวหรือหมู", "เลือด", "ลูกชิ้น", "ถั่วงอก", "ผักบุ้ง", "เครื่องปรุงรสจัด"] },
+    { name: "แกงคั่วสับปะรด", emoji: "🍍", desc: "แกงกะทิรสเปรี้ยวหวานใส่สับปะรดและกุ้ง", category: "แกง", img: "image/kaeng-kua-sapparot.png", ingredients: ["กุ้ง", "พริกแกงคั่ว", "กะทิ", "สับปะรด", "ใบมะกรูด"] },
+    { name: "ข้าวคลุกกะปิ", emoji: "🍚", desc: "ข้าวคลุกกะปิหอมผัดกับกุ้งแห้งและผักเคียง", category: "คาว", img: "image/khao-kluk-kapi.png", ingredients: ["ข้าวสวย", "กะปิ", "กุ้งแห้ง", "หมูหวาน", "ไข่เจียวซอย", "มะม่วงเปรี้ยวซอย", "ถั่วฝักยาวซอย"] }
   ];
 
   var FAV_KEY = "thai-food-favorites-v1";
@@ -594,16 +612,14 @@
   var favFilters = document.getElementById("favFilters");
   var favSearch = document.getElementById("favSearch");
   var favCategory = document.getElementById("favCategory");
-  var dishHit = document.getElementById("dishHit");
-  var dishModalBackdrop = document.getElementById("dishModalBackdrop");
-  var dishModalClose = document.getElementById("dishModalClose");
-  var dishModalMedallion = document.getElementById("dishModalMedallion");
-  var dishModalCategory = document.getElementById("dishModalCategory");
-  var dishModalName = document.getElementById("dishModalName");
-  var dishModalDesc = document.getElementById("dishModalDesc");
-  var dishModalHeartBtn = document.getElementById("dishModalHeartBtn");
-  var modalDish = null;
-  var modalTrigger = null;
+  var modalOverlay = document.getElementById("modalOverlay");
+  var modalClose = document.getElementById("modalClose");
+  var modalMedia = document.getElementById("modalMedia");
+  var modalTitle = document.getElementById("modalTitle");
+  var modalCategory = document.getElementById("modalCategory");
+  var modalDesc = document.getElementById("modalDesc");
+  var modalIngredients = document.getElementById("modalIngredients");
+  var lastFocusedEl = null;
 
   function loadFavorites() {
     try {
@@ -678,19 +694,7 @@
       if (!dish) return;
 
       var row = document.createElement("li");
-      row.className = "fav-row dish-hit";
-      row.setAttribute("role", "button");
-      row.setAttribute("tabindex", "0");
-      row.setAttribute("aria-label", "ดูรายละเอียด " + dish.name);
-      row.addEventListener("click", function () {
-        openDishModal(dish, row);
-      });
-      row.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openDishModal(dish, row);
-        }
-      });
+      row.className = "fav-row";
 
       var emoji = document.createElement("span");
       emoji.className = "fav-emoji";
@@ -715,6 +719,21 @@
       removeBtn.addEventListener("click", function (e) {
         e.stopPropagation();
         removeFavorite(dish.name);
+      });
+
+      row.tabIndex = 0;
+      row.setAttribute("role", "button");
+      row.setAttribute("aria-label", "ดูรายละเอียด " + dish.name);
+      row.addEventListener("click", function (e) {
+        if (e.target.closest(".remove-btn")) return;
+        openDetail(dish);
+      });
+      row.addEventListener("keydown", function (e) {
+        if (e.target.closest(".remove-btn")) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openDetail(dish);
+        }
       });
 
       row.appendChild(emoji);
@@ -762,6 +781,34 @@
     });
   }
 
+  function openDetail(dish) {
+    if (!dish) return;
+    lastFocusedEl = document.activeElement;
+
+    renderDishVisual(modalMedia, dish);
+    modalTitle.textContent = dish.name;
+    modalCategory.textContent = dish.category;
+    modalDesc.textContent = dish.desc;
+
+    modalIngredients.innerHTML = "";
+    dish.ingredients.forEach(function (item) {
+      var li = document.createElement("li");
+      li.textContent = item;
+      modalIngredients.appendChild(li);
+    });
+
+    modalOverlay.hidden = false;
+    modalClose.focus();
+  }
+
+  function closeDetail() {
+    modalOverlay.hidden = true;
+    if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
+      lastFocusedEl.focus();
+    }
+    lastFocusedEl = null;
+  }
+
   function rollDish() {
     if (dishes.length === 0) return;
     var nextIndex = currentIndex;
@@ -775,68 +822,6 @@
     currentIndex = nextIndex;
     renderCurrentDish();
   }
-
-  function updateModalHeartState() {
-    if (!modalDish) return;
-    var active = isFavorite(modalDish.name);
-    dishModalHeartBtn.setAttribute("aria-pressed", active ? "true" : "false");
-    dishModalHeartBtn.textContent = active ? "♥ อยู่ในรายการโปรดแล้ว" : "♡ เก็บเป็นเมนูโปรด";
-  }
-
-  function openDishModal(dish, trigger) {
-    modalDish = dish;
-    modalTrigger = trigger || null;
-    renderDishVisual(dishModalMedallion, dish);
-    dishModalCategory.textContent = dish.category;
-    dishModalName.textContent = dish.name;
-    dishModalDesc.textContent = dish.desc;
-    updateModalHeartState();
-    dishModalBackdrop.hidden = false;
-    dishModalClose.focus();
-    document.addEventListener("keydown", handleModalKeydown);
-  }
-
-  function closeDishModal() {
-    dishModalBackdrop.hidden = true;
-    modalDish = null;
-    document.removeEventListener("keydown", handleModalKeydown);
-    if (modalTrigger) modalTrigger.focus();
-    modalTrigger = null;
-  }
-
-  function handleModalKeydown(e) {
-    if (e.key === "Escape") closeDishModal();
-  }
-
-  dishHit.addEventListener("click", function () {
-    var dish = dishes[currentIndex];
-    if (dish) openDishModal(dish, dishHit);
-  });
-
-  dishHit.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      var dish = dishes[currentIndex];
-      if (dish) openDishModal(dish, dishHit);
-    }
-  });
-
-  dishModalClose.addEventListener("click", closeDishModal);
-
-  dishModalBackdrop.addEventListener("click", function (e) {
-    if (e.target === dishModalBackdrop) closeDishModal();
-  });
-
-  dishModalHeartBtn.addEventListener("click", function () {
-    if (!modalDish) return;
-    if (isFavorite(modalDish.name)) {
-      removeFavorite(modalDish.name);
-    } else {
-      addFavorite(modalDish.name);
-    }
-    updateModalHeartState();
-    updateHeartState();
-  });
 
   rollBtn.addEventListener("click", rollDish);
   heartBtn.addEventListener("click", function () {
@@ -858,6 +843,24 @@
   favCategory.addEventListener("change", function () {
     favCategoryFilter = favCategory.value;
     renderFavorites();
+  });
+
+  medallion.addEventListener("click", function () {
+    openDetail(dishes[currentIndex]);
+  });
+
+  dishName.addEventListener("click", function () {
+    openDetail(dishes[currentIndex]);
+  });
+
+  modalClose.addEventListener("click", closeDetail);
+
+  modalOverlay.addEventListener("click", function (e) {
+    if (e.target === modalOverlay) closeDetail();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !modalOverlay.hidden) closeDetail();
   });
 
   loadFavorites();

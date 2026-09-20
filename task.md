@@ -31,12 +31,11 @@ Derived from [context.md](./context.md). ดูรายละเอียด im
 
 ## หน้ารายละเอียดเมนู (Dish Detail Modal)
 
-- [x] กดที่เมนูที่สุ่มได้ (medallion/ชื่อ/คำอธิบายบนหน้าหลัก) เปิด modal แสดงรายละเอียด
-- [x] กดที่รายการในรายการโปรด (ยกเว้นปุ่ม ×) เปิด modal แสดงรายละเอียดของเมนูนั้น
-- [x] modal แสดง: รูป/emoji ขนาดใหญ่, ป้ายหมวดหมู่, ชื่อเมนู, คำอธิบายเต็ม, ปุ่มเก็บ/เอาออกจากรายการโปรด
-- [x] ปิดได้ 3 ทาง: ปุ่ม ×, กด Escape, คลิก backdrop
-- [x] เป็น modal/overlay ซ้อนหน้าเดิม ไม่ใช่หน้าแยก/URL แยก (คงดีไซน์ single-page static เดิมไว้)
-- [x] คืนโฟกัสกลับไปที่ปุ่ม/รายการที่กดเปิด modal ตอนปิด (keyboard accessibility)
+- [x] modal popup แสดงชื่อเมนู หมวดหมู่ คำอธิบาย และรายการส่วนประกอบ (แต่ละเมนูมี field `ingredients` ครบ 35 เมนู)
+- [x] เปิดได้จาก medallion/ชื่อเมนูบน stage หลัก และจากแต่ละรายการในรายการโปรด (คลิกทั้งแถว ยกเว้นปุ่ม ×)
+- [x] ปิดได้ 3 ทาง: ปุ่ม × ในมุมขวาบน, คลิก backdrop, กด Escape
+- [x] keyboard-accessible: medallion เป็น `<button>`, แถวโปรดมี tabindex/role="button"/Enter-Space, โฟกัสกลับไปที่ปุ่มเดิมหลังปิด modal
+- [ ] ทดสอบ modal ด้วยมือใน browser จริง (คลิกทุก entry point, ปิดทุกทาง, เช็ค scroll เมื่อ ingredients เยอะ)
 
 ## ดีไซน์
 
