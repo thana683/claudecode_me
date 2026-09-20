@@ -357,6 +357,132 @@
   }
 
   .fav-category:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* ---- clickable dish targets ---- */
+  .dish-hit {
+    cursor: pointer;
+    border-radius: 20px;
+  }
+
+  .dish-hit:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+  }
+
+  .dish-hit-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .fav-row.dish-hit {
+    border-radius: 12px;
+  }
+
+  /* ---- dish detail modal ---- */
+  .dish-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 8, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+  }
+
+  .dish-modal-backdrop[hidden] { display: none; }
+
+  .dish-modal {
+    background: var(--surface);
+    border-radius: 28px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 32px 28px 28px;
+    position: relative;
+    box-shadow: 0 24px 60px -20px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .dish-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dish-modal-close:hover { background: color-mix(in srgb, var(--red) 12%, var(--paper)); color: var(--red); }
+  .dish-modal-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .dish-modal-medallion {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.6rem;
+    background:
+      radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--gold) 35%, transparent), transparent 60%),
+      var(--paper);
+    border: 2px dashed var(--gold);
+    overflow: hidden;
+  }
+
+  .dish-modal-medallion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .dish-modal-category {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--gold) 18%, transparent);
+    color: var(--gold-strong);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .dish-modal h2 {
+    font-family: 'Trirong', serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .dish-modal p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .dish-modal-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 6px;
+  }
 </style>
 </head>
 <body>
@@ -368,10 +494,12 @@
   </header>
 
   <section class="stage">
-    <div class="medallion" id="medallion">🍜</div>
-    <div class="dish-copy" id="dishCopy">
-      <h2 id="dishName">กำลังสุ่ม…</h2>
-      <p id="dishDesc"></p>
+    <div class="dish-hit dish-hit-stage" id="dishHit" role="button" tabindex="0" aria-label="ดูรายละเอียดเมนูนี้">
+      <div class="medallion" id="medallion">🍜</div>
+      <div class="dish-copy" id="dishCopy">
+        <h2 id="dishName">กำลังสุ่ม…</h2>
+        <p id="dishDesc"></p>
+      </div>
     </div>
     <div class="controls">
       <button class="roll-btn" id="rollBtn" type="button">สุ่มเมนูใหม่</button>
@@ -394,6 +522,19 @@
     </div>
     <ul class="fav-list" id="favList"></ul>
   </section>
+</div>
+
+<div class="dish-modal-backdrop" id="dishModalBackdrop" hidden>
+  <div class="dish-modal" role="dialog" aria-modal="true" aria-labelledby="dishModalName">
+    <button class="dish-modal-close" id="dishModalClose" type="button" aria-label="ปิด">×</button>
+    <div class="dish-modal-medallion" id="dishModalMedallion"></div>
+    <span class="dish-modal-category" id="dishModalCategory"></span>
+    <h2 id="dishModalName"></h2>
+    <p id="dishModalDesc"></p>
+    <div class="dish-modal-actions">
+      <button class="roll-btn" id="dishModalHeartBtn" type="button" aria-pressed="false"></button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -453,6 +594,16 @@
   var favFilters = document.getElementById("favFilters");
   var favSearch = document.getElementById("favSearch");
   var favCategory = document.getElementById("favCategory");
+  var dishHit = document.getElementById("dishHit");
+  var dishModalBackdrop = document.getElementById("dishModalBackdrop");
+  var dishModalClose = document.getElementById("dishModalClose");
+  var dishModalMedallion = document.getElementById("dishModalMedallion");
+  var dishModalCategory = document.getElementById("dishModalCategory");
+  var dishModalName = document.getElementById("dishModalName");
+  var dishModalDesc = document.getElementById("dishModalDesc");
+  var dishModalHeartBtn = document.getElementById("dishModalHeartBtn");
+  var modalDish = null;
+  var modalTrigger = null;
 
   function loadFavorites() {
     try {
@@ -527,7 +678,19 @@
       if (!dish) return;
 
       var row = document.createElement("li");
-      row.className = "fav-row";
+      row.className = "fav-row dish-hit";
+      row.setAttribute("role", "button");
+      row.setAttribute("tabindex", "0");
+      row.setAttribute("aria-label", "ดูรายละเอียด " + dish.name);
+      row.addEventListener("click", function () {
+        openDishModal(dish, row);
+      });
+      row.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openDishModal(dish, row);
+        }
+      });
 
       var emoji = document.createElement("span");
       emoji.className = "fav-emoji";
@@ -549,7 +712,8 @@
       removeBtn.type = "button";
       removeBtn.setAttribute("aria-label", "เอา " + dish.name + " ออกจากรายการโปรด");
       removeBtn.textContent = "×";
-      removeBtn.addEventListener("click", function () {
+      removeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
         removeFavorite(dish.name);
       });
 
@@ -611,6 +775,68 @@
     currentIndex = nextIndex;
     renderCurrentDish();
   }
+
+  function updateModalHeartState() {
+    if (!modalDish) return;
+    var active = isFavorite(modalDish.name);
+    dishModalHeartBtn.setAttribute("aria-pressed", active ? "true" : "false");
+    dishModalHeartBtn.textContent = active ? "♥ อยู่ในรายการโปรดแล้ว" : "♡ เก็บเป็นเมนูโปรด";
+  }
+
+  function openDishModal(dish, trigger) {
+    modalDish = dish;
+    modalTrigger = trigger || null;
+    renderDishVisual(dishModalMedallion, dish);
+    dishModalCategory.textContent = dish.category;
+    dishModalName.textContent = dish.name;
+    dishModalDesc.textContent = dish.desc;
+    updateModalHeartState();
+    dishModalBackdrop.hidden = false;
+    dishModalClose.focus();
+    document.addEventListener("keydown", handleModalKeydown);
+  }
+
+  function closeDishModal() {
+    dishModalBackdrop.hidden = true;
+    modalDish = null;
+    document.removeEventListener("keydown", handleModalKeydown);
+    if (modalTrigger) modalTrigger.focus();
+    modalTrigger = null;
+  }
+
+  function handleModalKeydown(e) {
+    if (e.key === "Escape") closeDishModal();
+  }
+
+  dishHit.addEventListener("click", function () {
+    var dish = dishes[currentIndex];
+    if (dish) openDishModal(dish, dishHit);
+  });
+
+  dishHit.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      var dish = dishes[currentIndex];
+      if (dish) openDishModal(dish, dishHit);
+    }
+  });
+
+  dishModalClose.addEventListener("click", closeDishModal);
+
+  dishModalBackdrop.addEventListener("click", function (e) {
+    if (e.target === dishModalBackdrop) closeDishModal();
+  });
+
+  dishModalHeartBtn.addEventListener("click", function () {
+    if (!modalDish) return;
+    if (isFavorite(modalDish.name)) {
+      removeFavorite(modalDish.name);
+    } else {
+      addFavorite(modalDish.name);
+    }
+    updateModalHeartState();
+    updateHeartState();
+  });
 
   rollBtn.addEventListener("click", rollDish);
   heartBtn.addEventListener("click", function () {
